@@ -1,0 +1,9 @@
+{% extends "format.html" %}
+{% block content %}
+  {% if message %}
+    <div class="message">{{message}}</div>
+  {% endif %}
+  heyy! boy bud {{log["username"]}}
+  log status {{log["login"]}}<br>
+  {{log}}
+{% endblock %}

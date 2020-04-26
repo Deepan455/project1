@@ -1,0 +1,11 @@
+{% extends "format.html" %}
+{% block content %}
+  {% for item in items %}
+    <a href="/books/{{item.isbn}}">
+      <div class="result">
+        {{item.title}} ISBN:{{item.isbn}}<br>
+        By {{item.author}}:{{item.year}}
+      <div>
+    </a>
+  {% endfor %}
+{% endblock %}

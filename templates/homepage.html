@@ -1,0 +1,7 @@
+{% extends "format.html" %}
+{% block content %}
+  {% if message %}
+    <div class="message">{{message}}</div>
+  {% endif %}
+  Hey!{{name}}
+{% endblock %}

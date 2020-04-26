@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+    <form action="{{url_for('search')}}" method="post">
+      <input type="text" name="seek" placeholder="explore.........">
+      <button>Search</button>
+    </form>
+    {% if log["login"]==True %}
+      Hello, {{log["username"]}}
+      <a href="{{url_for('logout')}}">Log Out</a>
+    {% else %}
+      <a href="{{url_for('login')}}">Log In</a>
+      <a href="{{url_for('signup')}}">Sign Up</a>
+    {% endif %}
+    </header>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
