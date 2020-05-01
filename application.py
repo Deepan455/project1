@@ -160,7 +160,7 @@ def api(isbn):
         author=book.author
     reviews=db.execute("SELECT * FROM reviews WHERE isbn=:isbn",{"isbn":isbn}).fetchall()
     if not books:
-        return jsonify({"error": "Invalid flight_id"}), 422
+        return jsonify({"error": "Invalid ISBN number"}), 422
     elif not reviews:
         count=None
         average=None
