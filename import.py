@@ -9,7 +9,7 @@ db=scoped_session(sessionmaker(bind=engine))
 def main():
     engine.execute("CREATE TABLE users(id SERIAL PRIMARY KEY,name VARCHAR NOT NULL,email VARCHAR,username VARCHAR UNIQUE,password VARCHAR NOT NULL)")
     engine.execute("CREATE TABLE books(isbn VARCHAR PRIMARY KEY,title VARCHAR NOT NULL,author VARCHAR NOT NULL,year VARCHAR)")
-    engine.execute("CREATE TABLE reviews(id SERIAL PRIMARY KEY,comment VARCHAR NOT NULL,rating DECIMAL(8,1),isbn VARCHAR NOT NULL,username VARCHAR NOT NULL)")
+    engine.execute("CREATE TABLE reviews(id SERIAL PRIMARY KEY,comment VARCHAR,rating INTEGER NOT NULL,isbn VARCHAR NOT NULL,username VARCHAR NOT NULL)")
     k=open('books.csv')
     reader=csv.reader(k)
     for isbn,title,author,year in reader:

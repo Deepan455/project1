@@ -2,10 +2,10 @@
 {% block content %}
   {% for item in items %}
     <a href="/books/{{item.isbn}}">
-      <div class="result">
-        {{item.title}} ISBN:{{item.isbn}}<br>
-        By {{item.author}}:{{item.year}}
-      <div>
-    </a>
+      <div class="book">
+          <h3>{{item.title}}</h3><hr><br>
+          {{item.author}}<br>{{item.year}}
+        </div>
+    <a>
   {% endfor %}
 {% endblock %}

@@ -1,6 +1,6 @@
-import os
+import os,requests
 
-from flask import Flask, session, render_template, request
+from flask import Flask, session, render_template, request, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,7 +24,7 @@ log={"login":False,"username":None,"comment":False,"isbn":None}
 
 @app.route("/",methods=["GET","POST"])
 def index():
-    return render_template("homepage.html",message="welcome!",log=log)
+    return render_template("homepage.html",message="Welcome!",log=log)
 
 @app.route("/signup")
 def signup():
@@ -78,6 +78,7 @@ def auth():
 def logout():
     global log
     log["login"]=False
+    log["username"]=None
     return render_template("homepage.html",log=log,message="You are logged out!")
 
 @app.route("/books/<isbn>",methods=["GET","POST"])
@@ -91,8 +92,14 @@ def book(isbn):
             global log
             log["isbn"]=isbn
         reviews=db.execute("SELECT * FROM reviews WHERE isbn=:isbn",{"isbn":isbn})
-        return render_template("books.html",isbn=isbn,title=title,author=author,year=year,log=log,reviews=reviews)
-    except Exception:
+        res=requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "oyzxgaURlHMiE6jbIqjEg", "isbns": isbn})
+        data=res.json()
+        messages=data['books']
+        for mess in messages:
+            avgrate=mess["average_rating"]
+            countrate=mess["work_ratings_count"]
+        return render_template("books.html",isbn=isbn,title=title,author=author,year=year,log=log,reviews=reviews,avgrate=avgrate,countrate=countrate)
+    except TypeError:
         return render_template("homepage.html",message="book not available",log=log)
 
 @app.route("/books/review",methods=["POST","GET"])
@@ -109,7 +116,7 @@ def review():
             engine.execute("INSERT INTO reviews(comment,rating,isbn,username)VALUES(%s,%s,%s,%s)",(comment,rating,isbn,name))
             message="The review has been added to the site."
         else:
-            message="You have already provided review for this site"
+            message="You have already provided review for this book"
 
         all=db.execute("SELECT * FROM books WHERE isbn=:isbn",{"isbn":isbn}).fetchall()
         for one in all:
@@ -117,7 +124,13 @@ def review():
             author=one.author
             year=one.year
         reviews=db.execute("SELECT * FROM reviews WHERE isbn=:isbn",{"isbn":isbn}).fetchall()
-        return render_template("books.html",isbn=isbn,title=title,author=author,year=year,log=log,reviews=reviews,message=message)
+        res=requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "oyzxgaURlHMiE6jbIqjEg", "isbns": isbn})
+        data=res.json()
+        messages=data['books']
+        for mess in messages:
+            avgrate=mess["average_rating"]
+            countrate=mess["work_ratings_count"]
+        return render_template("books.html",isbn=isbn,title=title,author=author,year=year,log=log,reviews=reviews,message=message,avgrate=avgrate,countrate=countrate)
 
     else:
         return render_template("login.html",message="You need to log in first",log=log)
@@ -129,7 +142,42 @@ def error():
 
 @app.route("/search",methods=["GET","POST"])
 def search():
-    seek=request.form.get('seek')
-    seek='%'+seek+'%'
-    items=db.execute("SELECT * FROM books WHERE isbn LIKE :seek OR title LIKE :seek OR author LIKE :seek OR year LIKE :seek LIMIT 50",{"seek":seek})
-    return render_template("search.html",log=log,items=items)
+    try:
+        seek=request.form.get('seek')
+        seek='%'+seek+'%'
+        items=db.execute("SELECT * FROM books WHERE isbn LIKE :seek OR title LIKE :seek OR author LIKE :seek OR year LIKE :seek LIMIT 50",{"seek":seek})
+        return render_template("search.html",log=log,items=items)
+    except Exception:
+        return render_template("error.html",log=log,message="unknown error")
+
+@app.route("/api/<isbn>",methods=["GET","POST"])
+def api(isbn):
+    books=db.execute("SELECT * FROM books WHERE isbn=:isbn",{"isbn":isbn}).fetchall()
+    for book in books:
+        title=book.title
+        isbn=book.isbn
+        year=book.year
+        author=book.author
+    reviews=db.execute("SELECT * FROM reviews WHERE isbn=:isbn",{"isbn":isbn}).fetchall()
+    if not books:
+        return jsonify({"error": "Invalid flight_id"}), 422
+    elif not reviews:
+        count=None
+        average=None
+    else:
+        count=0
+        rating=0
+        for review in reviews:
+            count+=1
+            rating+=review.rating
+        average=rating/count
+        average=str(round(average,2))
+        count=str(count)
+    return jsonify({
+        "title":title,
+        "author":author,
+        "year":year,
+        "isbn":isbn,
+        "review_count":count,
+        "average_score":average
+    })

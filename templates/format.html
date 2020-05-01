@@ -3,22 +3,31 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='stylesheets/master.css') }}">
   </head>
   <body>
     <header>
-    <form action="{{url_for('search')}}" method="post">
-      <input type="text" name="seek" placeholder="explore.........">
-      <button>Search</button>
-    </form>
-    {% if log["login"]==True %}
-      Hello, {{log["username"]}}
-      <a href="{{url_for('logout')}}">Log Out</a>
-    {% else %}
-      <a href="{{url_for('login')}}">Log In</a>
-      <a href="{{url_for('signup')}}">Sign Up</a>
-    {% endif %}
+      <a href="{{url_for('index')}}">
+        <div id="first">BookLover</div>
+      </a>
+      <form action="{{url_for('search')}}" method="post">
+        <input type="text" name="seek" placeholder="explore.........">
+        <button>Search</button>
+      </form>
+      <div class="account">
+      {% if log["login"]==True %}
+        Hello, {{log["username"]}}
+        <a href="{{url_for('logout')}}">Log Out</a>
+      {% else %}
+        <a href="{{url_for('login')}}">Log In</a>
+        <a href="{{url_for('signup')}}">Sign Up</a>
+      {% endif %}
+      </div>
     </header>
-    {% block content %}
-    {% endblock %}
+    <div class="content">
+      {% block content %}
+      {% endblock %}
+    <div>
   </body>
 </html>

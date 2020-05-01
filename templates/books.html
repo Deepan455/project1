@@ -1,34 +1,64 @@
 {% extends "format.html" %}
 {% block content %}
-  {{message}}
-  <ul>
-    <li>ISBN:{{isbn}}</li>
-    <li>Title:{{title}}</li>
-    <li>Author:{{author}}</li>
-    <li>Year:{{year}}</li>
-  </ul>
-  <hr>
+{% if message %}
+  <div class="message">{{message}}</div>
+{% endif %}
+<div class="text">
+  <a href="/books/{{isbn}}">
+  <div class="book">
+    <h3>{{title}}</h3><hr><br>
+    {{author}}<br>
+    {{year}}
+  </div>
+  </a>
   <h2>Reviews</h2>
   {% for review in reviews %}
-  Id:{{review.id}}
-  Comment:{{review.comment}}
-  Rating:{{review.rating}}
-  ISBN:{{review.isbn}}
-  Commented By:{{review.username}}<br>
+    <div class="review">
+      <img src="{{url_for('static', filename='images/usericon.jpg')}}">
+      {% for i in range(0,review.rating) %}
+      <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+      <div class="user">{{review.username}}</div><br>
+      "{{review.comment}}"
+    </div>
   {% endfor %}
+  <div id="goodreads">
+    <h3>Goodreads Average Rating</h3>
+    Average rating {{avgrate}} from among {{countrate}} ratings
+  </div>
   <h3>Rate this book</h3>
-  <form action="{{url_for('review')}}" method="post">
+  <form action="{{url_for('review')}}" method="post" id="rating">
     <input type="radio" id="rating" name="rating" value=1>
-    <label for=1>*</label>
+    <label for=1>
+      {% for i in range(0,1) %}
+        <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+    </label><br>
     <input type="radio" id="rating" name="rating" value=2>
-    <label for=2>**</label>
+    <label for=2>
+      {% for i in range(0,2) %}
+        <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+    </label><br>
     <input type="radio" id="rating" name="rating" value=3>
-    <label for=3>***</label>
+    <label for=3>
+      {% for i in range(0,3) %}
+        <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+    </label><br>
     <input type="radio" id="rating" name="rating" value=4>
-    <label for=4>****</label>
+    <label for=4>
+      {% for i in range(0,4) %}
+        <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+    </label><br>
     <input type="radio" id="rating" name="rating" value=5>
-    <label for=5>*****</label>
-    <input type="text" name="comment" placeholder="Your views on this book">
+    <label for=5>
+      {% for i in range(0,5) %}
+        <img src="{{url_for('static', filename='images/star1.png')}}" class="star">
+      {% endfor %}
+    </label><br>
+    <input type="text" name="comment" placeholder="Your views on this book" id="comment">
     <button>Submit</button>
   </form>
 {% endblock %}

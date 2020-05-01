@@ -5,8 +5,8 @@
   {% endif %}
   <h2>Log In</h2>
   <form action="{{url_for('auth')}}" method="post">
-    Username:<input type="username" name="username" placeholder="Type your Username">
-    Password:<input type="password" name="password" placehoder="Password here">
+    <div>Username:<input type="username" name="username" placeholder="Type your Username"></div>
+    <div>Password:<input type="password" name="password" placehoder="Password here"></div><br>
     <button>Confirm</button>
   </form>
 {% endblock %}
